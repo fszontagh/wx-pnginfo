@@ -73,7 +73,7 @@ jobs:
       - name: Create build directory & Configure
         run: |
             New-Item -ItemType Directory -Force -Path build
-            cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake
+            cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake
 
       - name: Build the project
         run: |
