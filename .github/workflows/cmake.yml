@@ -11,7 +11,10 @@ on:
 jobs:
   build-linux:
     name: Build and Test on Linux
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, ubuntu-22.04]
+    runs-on: ubuntu-22.04
     
     steps:
       - name: Checkout repository
@@ -19,9 +22,16 @@ jobs:
 
 
       - name: Install dependencies
+        if: matrix.os == 'ubuntu-22.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libpng-dev libwxgtk3.2-dev wx3.2-headers
+          sudo apt-get install -y libpng-dev libwxgtk3.0-dev wx3.0-headers
+
+      - name: Install dependencies
+        if: matrix.os == 'ubuntu-24.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libpng-dev libwxgtk3.2-dev wx3.2-headers          
 
       - name: Create build directory
         run: mkdir build && cd build && cmake ..
@@ -51,22 +61,18 @@ jobs:
         run: |
           choco install cmake
           choco install wxwidgets
-
-      - name: Install libpng using vcpkg
-        run: |
-          git clone https://github.com/microsoft/vcpkg.git
-          cd vcpkg
-          ./bootstrap-vcpkg.bat
-          ./vcpkg integrate install
-          ./vcpkg install libpng
+          choco install libpng
 
       - name: Create build directory
-        run: mkdir build && cd build && cmake ..
+        run: |
+            mkdir build
+            cd build
+            CMAKE_PREFIX_PATH=~/.conda/envs/ cmake ..
 
       - name: Build the project
         run: |
           cd build
-          cmake --build . --parallel 4
+          cmake --build .
 
       - name: Run tests
         run: |
