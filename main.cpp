@@ -38,8 +38,8 @@ int main(int argc, char* argv[]) {
                     return 1;
                 }
 
-                wxString key = wxString::FromUTF8(arg.substr(0, eqPos));
-                wxString value = wxString::FromUTF8(arg.substr(eqPos + 1));
+                wxString key = wxString::FromUTF8(arg.substr(0, eqPos).c_str());
+                wxString value = wxString::FromUTF8(arg.substr(eqPos + 1).c_str());
                 newMeta[key] = value;
             }
 
