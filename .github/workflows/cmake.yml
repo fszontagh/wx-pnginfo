@@ -57,6 +57,7 @@ jobs:
           path: |
             ./vcpkg_installed
             ~/AppData/Local/vcpkg
+            ${env:VCPKG_ROOT}/packages
 
           key: ${{ runner.os }}-vcpkg-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
