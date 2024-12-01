@@ -50,19 +50,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Cache choco
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~\AppData\Local\Temp\chocolatey
+            C:\wxWidgets-3.1.2\
 
-      - name: Install dependencies (vcpkg)
+          key: ${{ runner.os }}-conda-${{ hashFiles('CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-
+
+
+      - name: Install dependencies (choco)
         run: |
-          choco install cmake
           choco install wxwidgets
+          choco install pkgconfiglite
 
       - name: Create build directory
         run: |
             mkdir build
             cd build
             cmake ..
-        env:
-          CMAKE_PREFIX_PATH: ~/.conda/envs/            
 
       - name: Build the project
         run: |
