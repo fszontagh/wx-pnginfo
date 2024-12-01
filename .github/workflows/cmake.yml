@@ -50,33 +50,34 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Cache choco
+      - name: Cache VCPKG
         uses: actions/cache@v3
+        id: cache
         with:
           path: |
-            ~\AppData\Local\Temp\chocolatey
-            C:\wxWidgets-3.1.2\
+            ./vcpkg_installed
+            ~/AppData/Local/vcpkg
 
-          key: ${{ runner.os }}-conda-${{ hashFiles('CMakeLists.txt') }}
+          key: ${{ runner.os }}-vcpkg-${{ hashFiles('CMakeLists.txt') }}
           restore-keys: |
-            ${{ runner.os }}-conda-
+            ${{ runner.os }}-vcpkg-
 
 
-      - name: Install dependencies (choco)
+      - name: Install dependencies (VCPKG)
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          choco install wxwidgets
-          choco install pkgconfiglite
+          vcpkg integrate install
+          vcpkg install wxwidgets:x64 --triplet x64-windows
 
-      - name: Create build directory
+      - name: Create build directory & Configure
         run: |
-            mkdir build
-            cd build
-            cmake ..
+            New-Item -ItemType Directory -Force -Path build
+            cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake
 
       - name: Build the project
         run: |
           cd build
-          cmake --build .
+          cmake --build build
 
       - name: Run tests
         run: |
