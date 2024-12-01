@@ -66,9 +66,19 @@ public:
         int num_text;
         if (png_get_text(png, info, &text_ptr, &num_text) > 0) {
             for (int i = 0; i < num_text; ++i) {
-                wxString key   = wxString::FromUTF8(text_ptr[i].key);
-                wxString value = wxString::FromUTF8(text_ptr[i].text);
-                metadata[key]  = value;
+                wxString key = wxString::FromUTF8(text_ptr[i].key);
+                wxString value;
+
+                if (text_ptr[i].compression == PNG_TEXT_COMPRESSION_NONE || 
+                    text_ptr[i].compression == PNG_TEXT_COMPRESSION_zTXt ||
+                    text_ptr[i].compression == PNG_ITXT_COMPRESSION_NONE ||
+                    text_ptr[i].compression == PNG_ITXT_COMPRESSION_zTXt) {
+                    value = wxString::FromUTF8(text_ptr[i].text);
+                } else {
+                    throw std::runtime_error("Unsupported compression type in metadata: " + std::to_string(text_ptr[i].compression));
+                }
+
+                metadata[key] = value;
             }
         }
 
@@ -102,14 +112,14 @@ public:
         png_init_io(readPng, input);
         png_read_info(readPng, readInfo);
 
-        png_uint_32 width   = png_get_image_width(readPng, readInfo);
-        png_uint_32 height  = png_get_image_height(readPng, readInfo);
-        png_byte color_type = png_get_color_type(readPng, readInfo);
-        png_byte bit_depth  = png_get_bit_depth(readPng, readInfo);
+        const png_uint_32 width   = png_get_image_width(readPng, readInfo);
+        const png_uint_32 height  = png_get_image_height(readPng, readInfo);
+        const png_byte color_type = png_get_color_type(readPng, readInfo);
+        const png_byte bit_depth  = png_get_bit_depth(readPng, readInfo);
 
         png_read_update_info(readPng, readInfo);
 
-        png_bytep rowPointers[height];
+        png_bytep* rowPointers = new png_bytep[height];
         for (png_uint_32 y = 0; y < height; ++y) {
             rowPointers[y] = static_cast<png_bytep>(malloc(png_get_rowbytes(readPng, readInfo)));
         }
