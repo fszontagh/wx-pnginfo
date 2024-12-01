@@ -60,7 +60,9 @@ jobs:
         run: |
             mkdir build
             cd build
-            CMAKE_PREFIX_PATH=~/.conda/envs/ cmake ..
+            cmake ..
+        env:
+          CMAKE_PREFIX_PATH: ~/.conda/envs/            
 
       - name: Build the project
         run: |
