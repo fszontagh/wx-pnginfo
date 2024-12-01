@@ -73,15 +73,15 @@ jobs:
       - name: Create build directory & Configure
         run: |
             New-Item -ItemType Directory -Force -Path build
-            cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake
+            cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
 
       - name: Build the project
         run: |
-          cmake --build build
+          cmake --build build --config Release
 
       - name: Run tests
         run: |
           cd build
-          .\png_metadata_reader.exe ../test-image/placeholder.png
-          .\png_metadata_reader.exe ../test-image/placeholder.png Author="John Doe" Version="1.0"        
-          .\png_metadata_reader.exe ../test-image/placeholder.png
+          .\Release\png_metadata_reader.exe ../test-image/placeholder.png
+          .\Release\png_metadata_reader.exe ../test-image/placeholder.png Author="John Doe" Version="1.0"        
+          .\Release\png_metadata_reader.exe ../test-image/placeholder.png
