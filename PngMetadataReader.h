@@ -8,10 +8,24 @@
 #include <unordered_map>
 #include <vector>
 
+
+#if wxCHECK_VERSION(3, 1, 0)
+
+#else
+    namespace std {
+        template <>
+        struct hash<wxString> {
+            size_t operator()(const wxString& key) const {
+                return std::hash<std::string>()(key.ToStdString());
+            }
+        };
+    }
+#endif
+
 class PngMetadataReader {
 public:
     static std::unordered_map<wxString, wxString> ReadMetadata(const std::string& filepath) {
-        std::unordered_map<wxString, wxString> metadata;
+        std::unordered_map<wxString, wxString, std::hash<wxString>> metadata;
 
         FILE* fp = fopen(filepath.c_str(), "rb");
         if (!fp) {

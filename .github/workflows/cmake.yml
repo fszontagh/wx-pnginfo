@@ -55,7 +55,6 @@ jobs:
         run: |
           choco install cmake
           choco install wxwidgets
-          choco install libpng
 
       - name: Create build directory
         run: |
