@@ -1,0 +1,78 @@
+name: CMake Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-linux:
+    name: Build and Test on Linux
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up CMake
+        uses: actions/setup-cmake@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libpng-dev libwxgtk3.0-dev
+
+      - name: Create build directory
+        run: mkdir build && cd build && cmake ..
+
+      - name: Build the project
+        run: |
+          cd build
+          cmake --build . --parallel 4
+
+      - name: Run tests
+        run: |
+          cd build
+          ./png_metadata_reader ../test-image/placeholder.png
+          ./png_metadata_reader ../test-image/placeholder.png Author="John Doe" Version="1.0"        
+          ./png_metadata_reader ../test-image/placeholder.png
+
+  build-windows:
+    name: Build and Test on Windows
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+
+      - name: Install dependencies (vcpkg)
+        run: |
+          choco install cmake
+          choco install wxwidgets
+
+      - name: Install libpng using vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git
+          cd vcpkg
+          ./bootstrap-vcpkg.bat
+          ./vcpkg integrate install
+          ./vcpkg install libpng
+
+      - name: Create build directory
+        run: mkdir build && cd build && cmake ..
+
+      - name: Build the project
+        run: |
+          cd build
+          cmake --build . --parallel 4
+
+      - name: Run tests
+        run: |
+          cd build
+          .\png_metadata_reader.exe ../test-image/placeholder.png
+          .\png_metadata_reader.exe ../test-image/placeholder.png Author="John Doe" Version="1.0"        
+          .\png_metadata_reader.exe ../test-image/placeholder.png
