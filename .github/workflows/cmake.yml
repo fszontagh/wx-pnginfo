@@ -77,7 +77,6 @@ jobs:
 
       - name: Build the project
         run: |
-          cd build
           cmake --build build
 
       - name: Run tests
