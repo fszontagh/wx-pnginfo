@@ -22,16 +22,10 @@ jobs:
 
 
       - name: Install dependencies
-        if: matrix.os == 'ubuntu-22.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libpng-dev libwxgtk3.0-dev wx3.0-headers
-
-      - name: Install dependencies
-        if: matrix.os == 'ubuntu-24.04'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libpng-dev libwxgtk3.2-dev wx3.2-headers          
+          sudo apt-get install -y libpng-dev libwxgtk*-dev wx*-headers
+  
 
       - name: Create build directory
         run: mkdir build && cd build && cmake ..
