@@ -67,7 +67,7 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           vcpkg integrate install
-          vcpkg install wxwidgets:x64 --triplet x64-windows
+          vcpkg install
 
       - name: Create build directory & Configure
         run: |
